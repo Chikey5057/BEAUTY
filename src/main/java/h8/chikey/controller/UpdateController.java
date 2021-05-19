@@ -32,31 +32,35 @@ public class UpdateController {
     @FXML
     private ComboBox<String> comboActive;
 
-    private  Product product;
-    private SessionFactory factory = new Configuration().configure().buildSessionFactory();
-    private ObservableList<Manufacturer> listManufacturer = FXCollections.observableArrayList();
-    ObservableList<String> listActive = FXCollections.observableArrayList("Active","NoActive");
+    @FXML
+    private TextField txtId;
+
+    SessionFactory factory = new Configuration().configure().buildSessionFactory();
+
 
     @FXML
     void initialize(){
-        DAO<Manufacturer,Integer> dao = new ManufacturerDAOIMPL(factory);
-        listManufacturer.addAll(dao.readAll());
-        comboManufacturer.setItems(listManufacturer);
-        comboActive.setItems(listActive);
-    }
-    @FXML
-    void updateItem(ActionEvent actionEvent){
-        DAO<Product,Integer> dao = new ProductDAOIMPL(factory);
-        product.setManufacturer(comboManufacturer.getValue());
-        if (comboActive.getValue().equals("Active")){ product.setProductIsActive(1);
-        }else if (comboActive.getValue().equals("NoActive"))product.setProductIsActive(0);
-        dao.update(product);
+
+        ObservableList<Manufacturer> manufacturerList = FXCollections.observableArrayList();
+        DAO<Manufacturer,Integer> manufacturerDAO = new ManufacturerDAOIMPL(factory);
+        manufacturerList.addAll(manufacturerDAO.readAll());
+        comboManufacturer.setItems(manufacturerList);
+        ObservableList<String> activeList = FXCollections.observableArrayList("Active","Noactive");
+        comboActive.setItems(activeList);
     }
 
-    public void setData(Product product){
-        this.product=product;
+
+    @FXML
+    void updateItem(ActionEvent event) {
         DAO<Product,Integer> dao = new ProductDAOIMPL(factory);
-        txtTitle.setText(product.getProductTitle());
-        txtCost.setText(String.valueOf(product.getProductCost()));
+        Product product = new Product();
+        product.setProductID(Integer.parseInt(txtId.getText()));
+        product.setProductTitle(txtTitle.getText());
+        product.setProductCost(Double.parseDouble(txtCost.getText()));
+        product.setManufacturer(comboManufacturer.getValue());
+        if(comboActive.getValue().equals("Active")){
+            product.setProductIsActive(1);
+        }else if(comboActive.getValue().equals("Noactive")){product.setProductIsActive(0);}
+        dao.update(product);
     }
 }

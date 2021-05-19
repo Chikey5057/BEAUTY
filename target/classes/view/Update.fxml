@@ -6,7 +6,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="318.0" prefWidth="269.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="h8.chikey.controller.UpdateController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="276.0" prefWidth="264.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="h8.chikey.controller.UpdateController">
    <children>
       <TextField fx:id="txtTitle" layoutY="50.0" />
       <TextField fx:id="txtCost" layoutY="93.0" />
@@ -17,5 +17,6 @@
       <Button fx:id="buttonGO" layoutX="102.0" layoutY="228.0" mnemonicParsing="false" onAction="#updateItem" text="Готово" />
       <Label layoutX="157.0" layoutY="179.0" text="Производитель" />
       <ComboBox fx:id="comboActive" layoutY="140.0" prefWidth="150.0" />
+      <TextField fx:id="txtId" layoutX="102.0" layoutY="14.0" prefHeight="25.0" prefWidth="29.0" />
    </children>
 </AnchorPane>

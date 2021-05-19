@@ -64,55 +64,67 @@ public class MainController {
         private SessionFactory factory = new Configuration().configure().buildSessionFactory();
         private ObservableList<Product> listProduct = FXCollections.observableArrayList();
 
-
         @FXML
-        void initialize(){
-            search();
+      void initialize(){
             setItems();
             selectItems();
             buttonDelete.setOnAction(actionEvent -> {
-                if(product!=null) {
-                    deleteItems(product);
-                }else System.out.println("BLUAD");
+                deleteItems(product);
                 clearScrean();
-
             });
-
+            search();
         }
 
-        void setItems(){
+      void setItems(){
             DAO<Product,Integer> dao = new ProductDAOIMPL(factory);
             listProduct.addAll(dao.readAll());
 
-            columnID.setCellValueFactory(p -> new SimpleObjectProperty<>(p.getValue().getProductID()));
-            columnCost.setCellValueFactory(p -> new SimpleObjectProperty<>(p.getValue().getProductCost()));
-            columnTitlte.setCellValueFactory(p -> new SimpleObjectProperty<>(p.getValue().getProductTitle()));
-            columnIsActive.setCellValueFactory(p -> {
-                if (p.getValue().getProductIsActive()==1){
+            columnID.setCellValueFactory(p->new SimpleObjectProperty<>(p.getValue().getProductID()));
+            columnTitlte.setCellValueFactory(p-> new SimpleObjectProperty<>(p.getValue().getProductTitle()));
+            columnCost.setCellValueFactory(p-> new SimpleObjectProperty<>(p.getValue().getProductCost()));
+            columnIsActive.setCellValueFactory(p-> {
+                if(p.getValue().getProductIsActive()==1){
                     return new SimpleObjectProperty<>("Active");
-                }else return new SimpleObjectProperty<>("NoActive");
+                } else return new SimpleObjectProperty<>("NoActive");
             });
-            columnManufacturer.setCellValueFactory(p-> new SimpleObjectProperty<>(p.getValue().getManufacturer().getManufacturerName()));
+            columnManufacturer.setCellValueFactory(p->new SimpleObjectProperty<>(p.getValue().getManufacturer().getManufacturerName()));
+
             tableView.setItems(listProduct);
 
         }
-
       public void selectItems(){
             tableView.getSelectionModel().selectedItemProperty().addListener((observableValue, product1, t1) -> {
-                product=t1;
-            } );
+               product=t1;
+            });
         }
 
-        void deleteItems(Product product){
+
+      void deleteItems(Product product){
             DAO<Product,Integer> dao = new ProductDAOIMPL(factory);
             dao.delete(product);
-        }
-
-        void clearScrean(){
+      }
+      void clearScrean(){
             listProduct.clear();
             initialize();
-        }
+      }
 
+    public void search(){
+        txtSearch.textProperty().addListener((observableValue, s, t1) -> {
+            FilteredList<Product> filteredList = new FilteredList<>(listProduct,product1 -> {
+                if(t1==null||t1.isEmpty()){
+                    return true;
+                }if (product1.getProductTitle().contains(t1.toLowerCase())){
+                    return true;
+                }else return false;
+            });
+            tableView.setItems(filteredList);
+        });
+    }
+
+    public void refresh(ActionEvent actionEvent) {
+        clearScrean();
+        tableView.setItems(listProduct);
+    }
 
     @FXML
     void createItems(ActionEvent actionEvent) throws IOException {
@@ -126,31 +138,15 @@ public class MainController {
 
     @FXML
     void updateItems(ActionEvent actionEvent) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Update.fxml"));
-        AnchorPane pane = loader.load();
-        UpdateController controller = loader.getController();
-        controller.setData(product);
+        Parent root = FXMLLoader.load(getClass().getResource("/view/Update.fxml"));
         Stage stage = new Stage();
         stage.setTitle("BeautyShop Create");
-        stage.setScene(new Scene(pane));
+        stage.setScene(new Scene(root));
         stage.show();
         clearScrean();
     }
 
-    void search(){
-            txtSearch.textProperty().addListener((observableValue, s, t1) -> {
-                FilteredList<Product> filteredList = new FilteredList<>(listProduct,p -> {
-                    if(t1== null || t1.isEmpty()){
-                        return true;
-                    }
-                    if (p.getProductTitle().toLowerCase().contains(t1.toLowerCase())){
-                        return true;
-                    }
-                    return  false;
-                } );
-                tableView.setItems(filteredList);
-            });
-    }
+
 
 
 }

@@ -15,8 +15,6 @@ import javafx.scene.control.TextField;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
-import java.util.List;
-
 public class CreateController {
 
     @FXML
@@ -34,27 +32,32 @@ public class CreateController {
     @FXML
     private ComboBox<String> comboActive;
 
-    private SessionFactory factory = new Configuration().configure().buildSessionFactory();
-    private ObservableList<Manufacturer> listManufacturer = FXCollections.observableArrayList();
-    ObservableList<String> listActive = FXCollections.observableArrayList("Active","NoActive");
+    SessionFactory factory = new Configuration().configure().buildSessionFactory();
 
     @FXML
-    void initialize(){
-        DAO<Manufacturer,Integer> dao = new ManufacturerDAOIMPL(factory);
-        listManufacturer.addAll(dao.readAll());
-        comboManufacturer.setItems(listManufacturer);
-        comboActive.setItems(listActive);
+    void initialize() {
+
+        ObservableList<Manufacturer> manufacturerList = FXCollections.observableArrayList();
+        DAO<Manufacturer,Integer> manufacturerDAO = new ManufacturerDAOIMPL(factory);
+        manufacturerList.addAll(manufacturerDAO.readAll());
+        comboManufacturer.setItems(manufacturerList);
+        ObservableList<String> activeList = FXCollections.observableArrayList("Active","Noactive");
+        comboActive.setItems(activeList);
+
     }
+
     @FXML
-    void createItem(ActionEvent actionEvent){
+    void createItem(ActionEvent event) {
         DAO<Product,Integer> dao = new ProductDAOIMPL(factory);
         Product product = new Product();
         product.setProductTitle(txtTitle.getText());
         product.setProductCost(Double.parseDouble(txtCost.getText()));
         product.setManufacturer(comboManufacturer.getValue());
-        if (comboActive.getValue().equals("Active")){ product.setProductIsActive(1);
-        }else if (comboActive.getValue().equals("NoActive"))product.setProductIsActive(0);
+        if(comboActive.getValue().equals("Active")){
+            product.setProductIsActive(1);
+        }else if (comboActive.getValue().equals("Noactive")){
+            product.setProductIsActive(0);
+        }
         dao.create(product);
     }
-
 }
